@@ -2,6 +2,7 @@
 # -*- coding=utf-8 -*-
 import os
 import sys
+import time
 import baostock as bs
 import pandas as pd
 
@@ -25,6 +26,14 @@ if __name__ == '__main__':
     endDate = sys.argv[4]
 
     print ("开始获取 股票:{} --- {} 开始时间: {} 结束时间 {} 的所有数据 ...".format(name, code, startDate, endDate))
+    outPath = path + "/" + name + ".csv"
+
+    # 获取时间
+    if os.path.exists(outPath):
+        utime = time.ctime(os.path.getmtime(outPath))
+        print (utime)
+
+    exit (0)
 
     lg = bs.login()
     if not lg.error_code:
@@ -46,10 +55,9 @@ if __name__ == '__main__':
     result = pd.DataFrame(dataList, columns=rs.fields)
 
     #### 结果集输出到csv文件 ####
-    outPath = path + "/" + name + ".csv"
     if os.path.exists(outPath):
         oldResult = pd.read_csv(outPath)
-        if len(oldResult) == len(result):
+        if len(oldResult) >= len(result):
             print ("数据已经最新!")
             exit(0)
     result.to_csv(outPath, index=False)

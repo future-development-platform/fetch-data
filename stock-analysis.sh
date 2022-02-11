@@ -146,14 +146,29 @@ EOF
 
 function update_info()
 {
+    i=0
+    str=''
+    progress=0
     # 输入: 股票名字、股票代码、当前时间
     . ${work_dir}/data/stock.sh
+    total="${#stock[@]}"
     for k in $(echo ${!stock[*]})
     do
-        code=${k}
-        name=${stock[$k]}
+        code="${k}"
+        name="${stock[$k]}"
         time=$(date "+%F")
-        python ${work_dir}/bin/k-day.py "${work_dir}/data/" "${name}" "${code}" "${time}"
+        progress=`echo "scale=2; $i/$total*100" | bc`
+        #python ${work_dir}/bin/k-day.py "${work_dir}/data/" "${name}" "${code}" "${time}" >/dev/null #2>&1
+        printf "[%-100s] %02.2f  %s\r" "$str" "$progress" "${name}"
+        i=$(($i+1))
+        str=''
+        k=0
+        while [ $k -le $progress ]
+        do
+            str+='#'
+            k=$(($k+1))
+        done 
+        str=#${str}
     done
 }
 
