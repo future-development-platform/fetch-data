@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 # -*- coding=utf-8 -*-
-
+import os
 import sys
 import baostock as bs
 import pandas as pd
@@ -12,16 +12,17 @@ import pandas as pd
     3. 当前时间
 """
 if __name__ == '__main__':
-    if len (sys.argv) != 4:
-        print ("请依次输入: 股票名字 股票代码 当前时间\n"
+    if len (sys.argv) != 5:
+        print ("请依次输入: 保存路径 股票名字 股票代码 当前时间\n"
                 "时间格式为: YYYYMMDD")
         exit(-1)
 
     # 输入参数
-    name = sys.argv[1]
-    code = sys.argv[2]
+    path = sys.argv[1]
+    name = sys.argv[2]
+    code = sys.argv[3]
     startDate = '1990-01-01'
-    endDate = sys.argv[3]
+    endDate = sys.argv[4]
 
     print ("开始获取 股票:{} --- {} 开始时间: {} 结束时间 {} 的所有数据 ...".format(name, code, startDate, endDate))
 
@@ -45,7 +46,12 @@ if __name__ == '__main__':
     result = pd.DataFrame(dataList, columns=rs.fields)
 
     #### 结果集输出到csv文件 ####
-    result.to_csv( name + ".csv", index=False)
-    print(result)
+    outPath = path + "/" + name + ".csv"
+    if os.path.exists(outPath):
+        oldResult = pd.read_csv(outPath)
+        if oldResult == result:
+            print ("数据已经最新!")
+            exit(0)
+    result.to_csv(outPath, index=False)
 
     bs.logout()

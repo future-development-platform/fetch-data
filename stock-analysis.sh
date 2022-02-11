@@ -153,7 +153,7 @@ function update_info()
         code=${k}
         name=${stock[$k]}
         time=$(date "+%F")
-        python ${work_dir}/bin/k-day.py "${name}" "${code}" "${time}"
+        python ${work_dir}/bin/k-day.py "${work_dir}/data/" "${name}" "${code}" "${time}"
     done
 }
 
