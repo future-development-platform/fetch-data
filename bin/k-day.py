@@ -49,7 +49,7 @@ if __name__ == '__main__':
     outPath = path + "/" + name + ".csv"
     if os.path.exists(outPath):
         oldResult = pd.read_csv(outPath)
-        if oldResult == result:
+        if len(oldResult) == len(result):
             print ("数据已经最新!")
             exit(0)
     result.to_csv(outPath, index=False)
