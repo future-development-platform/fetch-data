@@ -146,8 +146,15 @@ EOF
 
 function update_info()
 {
-    # 输入: 股票代码、当前时间
-
+    # 输入: 股票名字、股票代码、当前时间
+    . ${work_dir}/data/stock.sh
+    for k in $(echo ${!stock[*]})
+    do
+        code=${k}
+        name=${stock[$k]}
+        time=$(date "+%F")
+        python ${work_dir}/bin/k-day.py "${name}" "${code}" "${time}"
+    done
 }
 
 ### main
@@ -168,9 +175,8 @@ unset _opt_short _opt_long OPTRET
 
 while :; do
     case $1 in
-        -u|--update)
-            shift
-            # 更新数据
+        -u|--update)                        # 更新数据
+            #shift
             update_info
             ;;
         -h|--help)

@@ -12,17 +12,18 @@ import pandas as pd
     3. 当前时间
 """
 if __name__ == '__main__':
-    if len (sys.argv) != 3:
-        print ("请依次输入: 股票代码  当前时间\n"
+    if len (sys.argv) != 4:
+        print ("请依次输入: 股票名字 股票代码 当前时间\n"
                 "时间格式为: YYYYMMDD")
         exit(-1)
 
     # 输入参数
-    code = sys.argv[1]
+    name = sys.argv[1]
+    code = sys.argv[2]
     startDate = '1990-01-01'
-    endDate = sys.argv[2]
+    endDate = sys.argv[3]
 
-    print ("开始获取 股票: {} 开始时间: {} 结束时间 {} 的所有数据 ...".format(code, startDate, endDate))
+    print ("开始获取 股票:{} --- {} 开始时间: {} 结束时间 {} 的所有数据 ...".format(name, code, startDate, endDate))
 
     lg = bs.login()
     if not lg.error_code:
@@ -44,7 +45,7 @@ if __name__ == '__main__':
     result = pd.DataFrame(dataList, columns=rs.fields)
 
     #### 结果集输出到csv文件 ####
-    result.to_csv(code + ".csv", index=False)
+    result.to_csv( name + ".csv", index=False)
     print(result)
 
     bs.logout()
