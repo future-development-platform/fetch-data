@@ -9,7 +9,8 @@
 2. 安装 `python` 依赖(python3.5+)
     ```shell
     pip install baostock -i https://pypi.tuna.tsinghua.edu.cn/simple/ --trusted-host pypi.tuna.tsinghua.edu.cn
-    pip install pandas
+    pip install pandas          #
+    pip install openpyxl        # 处理 excel
     ```
 
 3. 升级 `baostock`(非必需)
