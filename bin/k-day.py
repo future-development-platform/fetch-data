@@ -12,15 +12,15 @@ import pandas as pd
     3. 当前时间
 """
 if __name__ == '__main__':
-    if len (sys.argv) != 4:
-        print ("请依次输入: 股票代码  起始时间  当前时间\n"
-                "时间格式为: YYYY-MM-DD")
+    if len (sys.argv) != 3:
+        print ("请依次输入: 股票代码  当前时间\n"
+                "时间格式为: YYYYMMDD")
         exit(-1)
 
     # 输入参数
     code = sys.argv[1]
-    startDate = sys.argv[2]
-    endDate = sys.argv[3]
+    startDate = '1990-01-01'
+    endDate = sys.argv[2]
 
     print ("开始获取 股票: {} 开始时间: {} 结束时间 {} 的所有数据 ...".format(code, startDate, endDate))
 
@@ -34,13 +34,17 @@ if __name__ == '__main__':
     if not rs.error_code:
         print ("获取历史K线出错! 错误码: {}, 错误信息: {}".format(rs.error_code, rs.error_code))
 
-    data_list = []
+    dataList = []
     while (rs.error_code == '0') & rs.next():
-        data_list.append(rs.get_row_data())
-    result = pd.DataFrame(data_list, columns=rs.fields)
+        dataList.append(rs.get_row_data())
+    if len(dataList) <= 0:
+        print ("股票: {} 开始时间: {} 结束时间 {} 的所有数据 不存在!!!".format(code, startDate, endDate))
+        bs.logout()
+        exit (0)
+    result = pd.DataFrame(dataList, columns=rs.fields)
 
     #### 结果集输出到csv文件 ####
-    result.to_csv("aa.csv", index=False)
+    result.to_csv(code + ".csv", index=False)
     print(result)
 
     bs.logout()

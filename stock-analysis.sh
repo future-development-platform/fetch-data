@@ -1,5 +1,9 @@
 #!/bin/bash
 
+set -e -u
+
+work_dir=$(dirname $(realpath -- $0))
+
 function parseopts() 
 {
     local opt= optarg= i= shortopts=$1
@@ -140,6 +144,11 @@ cat <<EOF
 EOF
 }
 
+function update_info()
+{
+    # 输入: 股票代码、当前时间
+
+}
 
 ### main
 trap 'cleanup 130' INT
@@ -162,6 +171,7 @@ while :; do
         -u|--update)
             shift
             # 更新数据
+            update_info
             ;;
         -h|--help)
             usage
