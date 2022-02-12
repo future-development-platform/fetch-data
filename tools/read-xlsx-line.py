@@ -41,6 +41,7 @@ if __name__ == '__main__':
             dfilds[k] = df[k]
         else:
             print ("'{}'字段不存在于 {} 文件的 {} sheet 中!", k, inPath, sheetName)
+            pass
 
     if len(dfilds) <= 0:
         print ("没有从 '{}' 文件的 '{}' 表中抽取到任何字段".format(inPath, sheetName))
@@ -54,3 +55,4 @@ if __name__ == '__main__':
     if None is not outdf:
         outdf.to_csv (outPath, index=False)
         print ("输出路径: {}".format(outPath))
+        exit(0)

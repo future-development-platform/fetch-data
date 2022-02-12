@@ -3,6 +3,12 @@
 set -e -u
 
 work_dir=$(dirname $(realpath -- $0))
+tmp_dir="${work_dir}/tmp"
+
+declare -A stocks
+stocks=(
+    ["A-深圳"]="${work_dir}/data/A-深圳/sz.xlsx"
+)
 
 function parseopts() 
 {
@@ -144,31 +150,50 @@ cat <<EOF
 EOF
 }
 
+function prepare()
+{
+    if [ ! -d "${tmp_dir}" ]
+    then
+        mkdir -p "${tmp_dir}"
+    fi
+    rm -rf "${tmp_dir}/*"
+}
+
 function update_info()
 {
     i=0
     j=0
     str=''
+    flag=''
     progress=0
-    # 输入: 股票名字、股票代码、当前时间
-    . ${work_dir}/data/stock.sh
-    total="${#stock[@]}"
-    for k in $(echo ${!stock[*]})
+    total="${#stocks[@]}"
+    inpath1="${tmp_dir}/inpath.tmp.csv"
+    inpath2="${tmp_dir}/inpath.csv"
+    for k in $(echo ${!stocks[*]})
     do
-        code="${k}"
-        name="${stock[$k]}"
+        name="${k}"
+        stockPath="${stocks[$k]}"
         time=$(date "+%F")
         i=$(($i+1))
         progress=`echo "scale=2; $i/$total*100" | bc`
-        python ${work_dir}/bin/k-day.py "${work_dir}/data/" "${name}" "${code}" "${time}" >/dev/null 2>&1
         if [ `echo "$j < $progress" | bc` -eq 1 ]
         then
             j=$(($j+1))
-            #str+='#'
             str=#${str}
         fi
+
+        python ${work_dir}/tools/read-xlsx-line.py "${stockPath}" "A股列表" "A股代码,A股简称" "${inpath1}" >/dev/null 2>&1
+        if [ x"A-深圳" == x$name ]
+        then
+            flag='sz'
+        fi
+        python ${work_dir}/tools/gen-right-stock.py "${inpath1}" "${flag}" "$name" "${inpath2}" >/dev/null 2>&1
+        python ${work_dir}/bin/main.py "$time" "k-day" "${inpath2}" "${work_dir}/data" >/dev/null 2>&1 
+
         printf "[%-100s] %02.2f  %s\r" "$str" "$progress" "${name}"
     done
+    echo ''
+    echo '所有数据更新完成!'
 }
 
 ### main
@@ -191,6 +216,7 @@ while :; do
     case $1 in
         -u|--update)                        # 更新数据
             #shift
+            prepare
             update_info
             ;;
         -h|--help)
